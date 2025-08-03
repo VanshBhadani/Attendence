@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Attendance Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #64b5f6;
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #64b5f6;
+            text-shadow: 0 0 20px rgba(100, 181, 246, 0.5);
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #90caf9;
+            font-weight: 400;
+        }
+
+        .calculator-card {
+            background: rgba(13, 71, 161, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 1s ease-out 0.3s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculator-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(100, 181, 246, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .input-label {
+            display: block;
+            color: #90caf9;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(25, 118, 210, 0.1);
+            border: 2px solid rgba(100, 181, 246, 0.3);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-family: 'Orbitron', monospace;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: #64b5f6;
+            box-shadow: 0 0 20px rgba(100, 181, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .input-field::placeholder {
+            color: rgba(144, 202, 249, 0.6);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(45deg, #1976d2, #64b5f6);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(100, 181, 246, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .result-section {
+            margin-top: 2.5rem;
+            padding: 2rem;
+            background: rgba(13, 71, 161, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(100, 181, 246, 0.2);
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .result-header {
+            font-size: 1.5rem;
+            color: #64b5f6;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(25, 118, 210, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(100, 181, 246, 0.2);
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #90caf9;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: #bbdefb;
+            margin-top: 0.5rem;
+        }
+
+        .attendance-percentage {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .excellent {
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            color: #ffffff;
+            box-shadow: 0 0 30px rgba(76, 175, 80, 0.4);
+        }
+
+        .good {
+            background: linear-gradient(45deg, #ff9800, #ffb74d);
+            color: #ffffff;
+            box-shadow: 0 0 30px rgba(255, 152, 0, 0.4);
+        }
+
+        .warning {
+            background: linear-gradient(45deg, #ff5722, #ff8a65);
+            color: #ffffff;
+            box-shadow: 0 0 30px rgba(255, 87, 34, 0.4);
+        }
+
+        .danger {
+            background: linear-gradient(45deg, #f44336, #e57373);
+            color: #ffffff;
+            box-shadow: 0 0 30px rgba(244, 67, 54, 0.4);
+        }
+
+        .status-text {
+            font-size: 1rem;
+            margin-top: 1rem;
+            font-weight: 400;
+        }
+
+        .error-message {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #f48fb1;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .calculator-card {
+                padding: 1.5rem;
+            }
+            
+            .result-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .attendance-percentage {
+                font-size: 2rem;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(100, 181, 246, 0.3);
+            border-radius: 50%;
+            border-top-color: #64b5f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">ATTENDANCE TRACKER</h1>
+            <p class="subtitle">Advanced Student Performance Analytics</p>
+        </div>
+
+        <div class="calculator-card">
+            <form id="attendanceForm">
+                <div class="input-group">
+                    <label for="totalClasses" class="input-label">Total Classes Held</label>
+                    <input 
+                        type="number" 
+                        id="totalClasses" 
+                        class="input-field" 
+                        placeholder="Enter total number of classes"
+                        min="1"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="attendedClasses" class="input-label">Classes Attended</label>
+                    <input 
+                        type="number" 
+                        id="attendedClasses" 
+                        class="input-field" 
+                        placeholder="Enter classes you attended"
+                        min="0"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="calculate-btn" id="calculateBtn">
+                    <span id="btnText">Calculate Attendance</span>
+                    <span id="btnLoading" class="loading" style="display: none;"></span>
+                </button>
+            </form>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="result-section" id="resultSection">
+                <h2 class="result-header">📊 ATTENDANCE ANALYSIS</h2>
+                
+                <div class="result-details">
+                    <div class="result-item">
+                        <div class="result-value" id="totalClassesResult">0</div>
+                        <div class="result-label">Total Classes</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="attendedClassesResult">0</div>
+                        <div class="result-label">Classes Attended</div>
+                    </div>
+                </div>
+
+                <div class="attendance-percentage" id="attendancePercentage">
+                    <div id="percentageValue">0%</div>
+                    <div class="status-text" id="statusText"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create animated background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize particles
+        createParticles();
+
+        // Form handling
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateAttendance();
+        });
+
+        function showLoading() {
+            const btn = document.getElementById('calculateBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoading = document.getElementById('btnLoading');
+            
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-block';
+        }
+
+        function hideLoading() {
+            const btn = document.getElementById('calculateBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoading = document.getElementById('btnLoading');
+            
+            btn.disabled = false;
+            btnText.style.display = 'inline';
+            btnLoading.style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function calculateAttendance() {
+            showLoading();
+            hideError();
+
+            // Get input values
+            const totalClasses = parseInt(document.getElementById('totalClasses').value);
+            const attendedClasses = parseInt(document.getElementById('attendedClasses').value);
+
+            // Simulate processing time for futuristic effect
+            setTimeout(() => {
+                // Validate input
+                if (totalClasses <= 0) {
+                    showError('Total classes must be greater than zero.');
+                    hideLoading();
+                    return;
+                }
+
+                if (attendedClasses > totalClasses || attendedClasses < 0) {
+                    showError('Invalid number of attended classes.');
+                    hideLoading();
+                    return;
+                }
+
+                // Calculate percentage
+                const percentage = (attendedClasses / totalClasses) * 100;
+
+                // Update result display
+                document.getElementById('totalClassesResult').textContent = totalClasses;
+                document.getElementById('attendedClassesResult').textContent = attendedClasses;
+                document.getElementById('percentageValue').textContent = percentage.toFixed(2) + '%';
+
+                // Determine status and styling
+                const attendanceDiv = document.getElementById('attendancePercentage');
+                const statusText = document.getElementById('statusText');
+
+                // Remove all status classes
+                attendanceDiv.className = 'attendance-percentage';
+
+                if (percentage > 90) {
+                    attendanceDiv.classList.add('excellent');
+                    statusText.textContent = '🎉 Excellent Attendance!';
+                } else if (percentage >= 80) {
+                    attendanceDiv.classList.add('good');
+                    statusText.textContent = '👍 Good Attendance!';
+                } else if (percentage >= 75) {
+                    attendanceDiv.classList.add('warning');
+                    statusText.textContent = '⚠️ Needs Improvement!';
+                } else {
+                    attendanceDiv.classList.add('danger');
+                    statusText.textContent = '🚨 Critical - Immediate Action Required!';
+                }
+
+                // Show result section
+                document.getElementById('resultSection').style.display = 'block';
+                
+                // Scroll to results
+                document.getElementById('resultSection').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+
+                hideLoading();
+            }, 1000);
+        }
+
+        // Add input validation
+        document.getElementById('totalClasses').addEventListener('input', function() {
+            const attendedInput = document.getElementById('attendedClasses');
+            attendedInput.max = this.value;
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.input-field').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        // Add keyboard shortcut for calculation
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                calculateAttendance();
+            }
+        });
+    </script>
+</body>
+</html>
