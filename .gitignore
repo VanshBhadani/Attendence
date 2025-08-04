@@ -59,3 +59,32 @@ logs/
 
 # Screenshots (optional - you might want to keep these for documentation)
 # *.png
+
+# Deployment files (we only want Docker)
+railway.toml
+railway.json
+render.yaml
+fly.toml
+build.sh
+start.py
+fallback_scraper.py
+
+# Debug and test files
+debug_*.py
+test_*.py
+*_test.py
+
+# Duplicate files
+attendance_calculator.py
+attendance_calculator.html
+attendance_report.py
+enhanced-index.html
+erp_integration.py
+playwright_erp_scraper_v2.py
+real_erp_scraper.py
+server.py
+setup_credentials.py
+start_server.bat
+test_login.py
+index.html
+templates/enhanced-index.html
