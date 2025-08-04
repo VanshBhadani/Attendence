@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Attendance Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #64b5f6;
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #64b5f6;
+            text-shadow: 0 0 20px rgba(100, 181, 246, 0.5);
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #90caf9;
+            font-weight: 400;
+        }
+
+        .portal-card {
+            background: rgba(13, 71, 161, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 1s ease-out 0.3s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(100, 181, 246, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .input-label {
+            display: block;
+            color: #90caf9;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(25, 118, 210, 0.1);
+            border: 2px solid rgba(100, 181, 246, 0.3);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-family: 'Orbitron', monospace;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: #64b5f6;
+            box-shadow: 0 0 20px rgba(100, 181, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .input-field::placeholder {
+            color: rgba(144, 202, 249, 0.6);
+        }
+
+        .scrape-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(45deg, #1976d2, #64b5f6);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scrape-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(100, 181, 246, 0.4);
+        }
+
+        .scrape-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .scrape-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            margin-top: 2.5rem;
+            padding: 2rem;
+            background: rgba(13, 71, 161, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(100, 181, 246, 0.2);
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .result-header {
+            font-size: 1.5rem;
+            color: #64b5f6;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .subject-card {
+            background: rgba(25, 118, 210, 0.1);
+            border: 1px solid rgba(100, 181, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 181, 246, 0.2);
+        }
+
+        .subject-name {
+            font-size: 1.2rem;
+            color: #90caf9;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .attendance-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .attendance-stats {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #bbdefb;
+            text-transform: uppercase;
+        }
+
+        .attendance-percentage {
+            font-size: 1.5rem;
+            font-weight: 900;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .excellent {
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .good {
+            background: linear-gradient(45deg, #ff9800, #ffb74d);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .warning {
+            background: linear-gradient(45deg, #ff5722, #ff8a65);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
+        }
+
+        .danger {
+            background: linear-gradient(45deg, #f44336, #e57373);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .error-message {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #f48fb1;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(100, 181, 246, 0.3);
+            border-radius: 50%;
+            border-top-color: #64b5f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            text-align: center;
+            color: #90caf9;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .portal-card {
+                padding: 1.5rem;
+            }
+            
+            .attendance-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .attendance-stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">ERP ATTENDANCE PORTAL</h1>
+            <p class="subtitle">Automated Student Performance Analytics</p>
+        </div>
+
+        <div class="portal-card">
+            <form id="scrapeForm">
+                <div class="input-group">
+                    <label for="rollNumber" class="input-label">
+                        <i class="fas fa-id-card"></i> Student Roll Number
+                    </label>
+                    <input 
+                        type="text" 
+                        id="rollNumber" 
+                        class="input-field" 
+                        placeholder="Enter your roll number (e.g., 123456)"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="scrape-btn" id="scrapeBtn">
+                    <span id="btnText">
+                        <i class="fas fa-download"></i> Get Attendance Data
+                    </span>
+                    <span id="btnLoading" style="display: none;">
+                        <span class="loading"></span> Processing...
+                    </span>
+                </button>
+            </form>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="result-section" id="resultSection">
+                <h2 class="result-header">
+                    <i class="fas fa-chart-bar"></i> ATTENDANCE REPORT
+                </h2>
+                
+                <div id="attendanceData"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create animated background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize particles
+        createParticles();
+
+        // Form handling
+        document.getElementById('scrapeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            scrapeAttendance();
+        });
+
+        function showLoading() {
+            const btn = document.getElementById('scrapeBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoading = document.getElementById('btnLoading');
+            
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-block';
+        }
+
+        function hideLoading() {
+            const btn = document.getElementById('scrapeBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoading = document.getElementById('btnLoading');
+            
+            btn.disabled = false;
+            btnText.style.display = 'inline-block';
+            btnLoading.style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + message;
+            errorDiv.style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function getAttendanceClass(percentage) {
+            if (percentage > 90) return 'excellent';
+            if (percentage >= 80) return 'good';
+            if (percentage >= 75) return 'warning';
+            return 'danger';
+        }
+
+        function displayAttendanceData(data) {
+            const container = document.getElementById('attendanceData');
+            container.innerHTML = '';
+
+            if (data.subjects && data.subjects.length > 0) {
+                data.subjects.forEach(subject => {
+                    const subjectCard = document.createElement('div');
+                    subjectCard.className = 'subject-card';
+                    
+                    const percentage = parseFloat(subject.percentage);
+                    const attendanceClass = getAttendanceClass(percentage);
+                    
+                    subjectCard.innerHTML = `
+                        <div class="subject-name">${subject.name}</div>
+                        <div class="attendance-info">
+                            <div class="attendance-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">${subject.present}</div>
+                                    <div class="stat-label">Present</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${subject.total}</div>
+                                    <div class="stat-label">Total</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${subject.absent}</div>
+                                    <div class="stat-label">Absent</div>
+                                </div>
+                            </div>
+                            <div class="attendance-percentage ${attendanceClass}">
+                                ${subject.percentage}%
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(subjectCard);
+                });
+            } else {
+                container.innerHTML = '<div class="loading-text">No attendance data found for this roll number.</div>';
+            }
+        }
+
+        async function scrapeAttendance() {
+            const rollNumber = document.getElementById('rollNumber').value.trim();
+            
+            if (!rollNumber) {
+                showError('Please enter your roll number.');
+                return;
+            }
+
+            showLoading();
+            hideError();
+
+            try {
+                const response = await fetch('/scrape', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ roll_number: rollNumber })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayAttendanceData(data);
+                    document.getElementById('resultSection').style.display = 'block';
+                    
+                    // Scroll to results
+                    document.getElementById('resultSection').scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                } else {
+                    showError(data.error || 'Failed to fetch attendance data.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error. Please check your connection and try again.');
+            }
+
+            hideLoading();
+        }
+
+        // Add input effects
+        document.querySelectorAll('.input-field').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        // Add keyboard shortcut
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                scrapeAttendance();
+            }
+        });
+    </script>
+</body>
+</html>
