@@ -2,12 +2,10 @@ services:
   - type: web
     name: erp-attendance-app
     env: python
-    buildCommand: chmod +x build.sh && ./build.sh
+    buildCommand: pip install -r requirements.txt && playwright install chromium
     startCommand: python app.py
     envVars:
       - key: FLASK_ENV
         value: production
       - key: FLASK_SECRET_KEY
         generateValue: true
-      - key: PLAYWRIGHT_BROWSERS_PATH
-        value: /opt/render/.cache
