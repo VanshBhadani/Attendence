@@ -35,10 +35,21 @@ class PlaywrightERPScraper:
         """Initialize Playwright browser"""
         try:
             self.playwright = await async_playwright().start()
-            # Use Chromium for better compatibility
+            # Use Chromium for better compatibility with specific args for cloud deployment
             self.browser = await self.playwright.chromium.launch(
                 headless=True,  # Set to True for production web app
-                args=['--no-sandbox', '--disable-dev-shm-usage']
+                args=[
+                    '--no-sandbox', 
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--disable-web-security',
+                    '--disable-features=VizDisplayCompositor',
+                    '--no-first-run',
+                    '--no-default-browser-check',
+                    '--disable-background-timer-throttling',
+                    '--disable-renderer-backgrounding',
+                    '--disable-backgrounding-occluded-windows'
+                ]
             )
             
             # Create new page with realistic user agent
